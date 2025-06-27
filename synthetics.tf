@@ -1,5 +1,5 @@
 module "cluster1_monitors" {
-  source = "modules/synthetics_monitor"
+  source = "./modules/synthetics_monitor"
 
   account_id            = var.account_id
   alert_policy_id       = var.alert_policy_id
@@ -13,7 +13,7 @@ module "cluster1_monitors" {
 }
 
 module "cluster2_monitors" {
-  source = "modules/synthetics_monitor"
+  source = "./modules/synthetics_monitor"
 
   account_id            = var.account_id
   alert_policy_id       = var.alert_policy_id
