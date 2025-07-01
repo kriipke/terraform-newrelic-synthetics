@@ -37,21 +37,30 @@ $http.get("${each.value.url}/version", {
 EOT
 }
 
-resource "newrelic_synthetics_alert_condition" "this" {
+resource "newrelic_nrql_alert_condition" "this" {
   for_each = newrelic_synthetics_monitor.this
 
-  policy_id                   = var.alert_policy_id
-  name                        = "Synthetics Failure - ${each.value.name}"
-  monitor_id                  = each.value.id
-  runbook_url                 = var.runbook_url
-  enabled                     = true
-  violation_time_limit_seconds = 3600
+  account_id = var.account_id
+  policy_id  = var.alert_policy_id
+  type       = "static"
+  name       = "Synthetics Failure - ${each.value.name}"
+  runbook_url = var.runbook_url
 
-  terms {
-    threshold              = "1"
-    threshold_duration     = 300
-    threshold_occurrences  = "ALL"
-    operator               = "equal"
-    priority               = "CRITICAL"
+  enabled    = true
+  violation_time_limit = "ONE_HOUR"
+
+  nrql {
+    query = <<EOT
+FROM SyntheticCheck 
+SELECT count(*) 
+WHERE monitorName = '${each.value.name} /version' AND result = 'FAILED'
+EOT
+  }
+
+  critical {
+    operator              = "above"
+    threshold             = 0
+    threshold_duration    = 300
+    threshold_occurrences = "ALL"
   }
 }
