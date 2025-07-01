@@ -1,3 +1,7 @@
 output "monitor_ids" {
-  value = { for k, v in newrelic_synthetics_monitor.this : k => v.id }
+  description = "Map of service name to monitor ID"
+  value = {
+    for name, monitor in newrelic_synthetics_monitor.this :
+    name => monitor.id
+  }
 }
