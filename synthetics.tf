@@ -1,27 +1,23 @@
-module "cluster1_monitors" {
-  source = "./modules/synthetics_monitor"
+module "cluster_us_east_monitors" {
+  source = "../modules/synthetics_monitor"
 
-  account_id            = var.account_id
-  alert_policy_id       = var.alert_policy_id
-  runbook_url           = "https://runbooks.internal/cluster1"
+  account_id            = var.newrelic_account_id
+  alert_policy_id       = var.synthetics_alert_policy_id
+  runbook_url           = "https://docs.mycompany.com/runbooks/us-east"
   cluster_name          = "us-east-cluster"
   create_private_location = true
-  services = [
-    { name = "auth-service", url = "auth.us-east.internal" },
-    { name = "api-gateway",  url = "gateway.us-east.internal" },
-  ]
-}
 
-module "cluster2_monitors" {
-  source = "./modules/synthetics_monitor"
-
-  account_id            = var.account_id
-  alert_policy_id       = var.alert_policy_id
-  runbook_url           = "https://runbooks.internal/cluster2"
-  cluster_name          = "eu-west-cluster"
-  create_private_location = true
   services = [
-    { name = "user-service", url = "user.eu-west.internal" },
-    { name = "billing-api",  url = "billing.eu-west.internal" },
+    {
+      name              = "gateway"
+      url               = "gateway.us-east.internal"
+      locations_public  = ["AWS_US_EAST_1"]
+      locations_private = []
+    },
+    {
+      name              = "user-api"
+      url               = "user-api.us-east.internal"
+      locations_private = ["us-east-cluster"]
+    }
   ]
 }
