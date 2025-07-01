@@ -25,9 +25,23 @@ variable "create_private_location" {
 }
 
 variable "services" {
+  description = "List of services to monitor"
   type = list(object({
-    name = string
-    url  = string
+    name              = string
+    url               = string
+    locations_public  = optional(list(string), [])
+    locations_private = optional(list(string), [])
   }))
-  description = "List of services in the cluster to monitor"
+
+  validation {
+    condition = alltrue([
+      for s in var.services :
+      (
+        length(try(s.locations_public, [])) > 0 ||
+        length(try(s.locations_private, [])) > 0
+      )
+    ])
+
+    error_message = "Each service must specify at least one public or private location."
+  }
 }
