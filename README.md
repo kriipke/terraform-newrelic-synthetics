@@ -1,5 +1,21 @@
 # synthetics_monitor
 
+
+  dynamic "locations_public" {
+    for_each = length(each.value.locations_public) > 0 ? [each.value.locations_public] : []
+    content {
+      locations_public = locations_public.value
+    }
+  }
+
+  dynamic "locations_private" {
+    for_each = length(each.value.locations_private) > 0 ? [each.value.locations_private] :
+      (var.create_private_location ? [[newrelic_synthetics_private_location.this[0].name]] : [])
+    content {
+      locations_private = locations_private.value
+    }
+  }
+
 This Terraform module creates New Relic Synthetics monitors and alert conditions to validate `/version` endpoints for services deployed across Kubernetes clusters. Each cluster can be defined as a **private location**, and each service can be configured with specific **public and/or private locations**.
 
 ## 📦 Resources
